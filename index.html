@@ -1,1 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concours Prépa 2026 - Compte à rebours</title>
+    <style>
+        :root {
+            --space-8: 8px;
+            --space-16: 16px;
+            --space-24: 24px;
+            --space-32: 32px;
+            --radius-lg: 12px;
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: var(--space-24);
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: var(--space-16);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .countdowns-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-24);
+            margin-bottom: 48px;
+        }
+
+        .countdown-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .countdown-card:nth-child(1) { animation-delay: 0.1s; }
+        .countdown-card:nth-child(2) { animation-delay: 0.2s; }
+        .countdown-card:nth-child(3) { animation-delay: 0.3s; }
+        .countdown-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .countdown-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            margin-bottom: var(--space-16);
+            padding-bottom: var(--space-16);
+            border-bottom: 2px solid;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: var(--space-8);
+        }
+
+        .card-type {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        .card-dates {
+            font-size: 0.85rem;
+            margin-top: 4px;
+            opacity: 0.7;
+        }
+
+        .card-filieres {
+            display: inline-block;
+            margin-top: var(--space-8);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .countdown-display {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-8);
+            margin-bottom: var(--space-16);
+        }
+
+        .time-unit {
+            text-align: center;
+            padding: var(--space-16) var(--space-8);
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+        }
+
+        .time-value {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+            line-height: 1;
+        }
+
+        .time-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            margin-top: 4px;
+            opacity: 0.7;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: var(--space-8);
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1s ease;
+        }
+
+        .status {
+            text-align: center;
+            font-weight: 600;
+            padding: var(--space-8);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .status-upcoming {
+            background: rgba(33, 150, 243, 0.2);
+            color: #1565C0;
+        }
+
+        .status-ongoing {
+            background: rgba(76, 175, 80, 0.2);
+            color: #2E7D32;
+        }
+
+        .status-finished {
+            background: rgba(158, 158, 158, 0.2);
+            color: #616161;
+        }
+
+        .info-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--radius-lg);
+            padding: var(--space-32);
+            color: #333;
+            animation: fadeIn 1s ease-out 0.5s;
+            animation-fill-mode: both;
+        }
+
+        .info-section h2 {
+            color: #667eea;
+            margin-bottom: var(--space-16);
+            font-size: 1.8rem;
+        }
+
+        .info-section p {
+            line-height: 1.6;
+            margin-bottom: var(--space-16);
+            color: #555;
+        }
+
+        .schools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-16);
+            margin-top: var(--space-24);
+        }
+
+        .school-item {
+            padding: var(--space-16);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .good-luck {
+            text-align: center;
+            margin-top: var(--space-32);
+            padding: var(--space-24);
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: var(--radius-lg);
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .countdowns-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .time-value {
+                font-size: 1.5rem;
+            }
+
+            body {
+                padding: var(--space-16);
+            }
+        }
+
+        /* Color schemes for each concours */
+        .card-xens { border-top: 4px solid #2196F3; }
+        .card-xens .card-header { border-color: #2196F3; }
+        .card-xens .card-title { color: #1976D2; }
+        .card-xens .progress-fill { background: linear-gradient(90deg, #2196F3, #1976D2); }
+        .card-xens .time-value { color: #2196F3; }
+        .card-xens .card-filieres { color: #1976D2; }
+
+        .card-mines { border-top: 4px solid #4CAF50; }
+        .card-mines .card-header { border-color: #4CAF50; }
+        .card-mines .card-title { color: #388E3C; }
+        .card-mines .progress-fill { background: linear-gradient(90deg, #4CAF50, #388E3C); }
+        .card-mines .time-value { color: #4CAF50; }
+        .card-mines .card-filieres { color: #388E3C; }
+
+        .card-centrale { border-top: 4px solid #9C27B0; }
+        .card-centrale .card-header { border-color: #9C27B0; }
+        .card-centrale .card-title { color: #7B1FA2; }
+        .card-centrale .progress-fill { background: linear-gradient(90deg, #9C27B0, #7B1FA2); }
+        .card-centrale .time-value { color: #9C27B0; }
+        .card-centrale .card-filieres { color: #7B1FA2; }
+
+        .card-oraux { border-top: 4px solid #FF9800; }
+        .card-oraux .card-header { border-color: #FF9800; }
+        .card-oraux .card-title { color: #F57C00; }
+        .card-oraux .progress-fill { background: linear-gradient(90deg, #FF9800, #F57C00); }
+        .card-oraux .time-value { color: #FF9800; }
+        .card-oraux .card-filieres { color: #F57C00; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 Concours Prépa 2026</h1>
+            <p class="subtitle">Compte à rebours vers les concours des grandes écoles d'ingénieurs</p>
+        </header>
+
+        <div class="countdowns-grid" id="countdowns"></div>
+
+        <div class="info-section">
+            <h2>📚 À propos des Concours</h2>
+            <p>
+                Les concours des Grandes Écoles d'ingénieurs permettent l'admission dans les établissements les plus prestigieux de France. 
+                Après deux années de classe préparatoire aux grandes écoles (CPGE), les étudiants des filières scientifiques 
+                (MP, MPI, PC, PSI, PT, TSI) passent ces concours qui se composent d'épreuves écrites puis orales.
+            </p>
+            <p>
+                <strong>Banques d'épreuves principales :</strong>
+            </p>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+                <li><strong>X-ENS-ESPCI :</strong> Polytechnique, ENS Paris-Saclay, ENS Lyon, ENS Ulm, ESPCI</li>
+                <li><strong>Mines-Ponts :</strong> Mines Paris - PSL, Ponts ParisTech, ISAE-SUPAERO, Télécom Paris</li>
+                <li><strong>Centrale-Supélec :</strong> CentraleSupélec, Centrale Lyon, Centrale Nantes, Supélec</li>
+            </ul>
+
+            <div class="schools-grid">
+                <div class="school-item">École Polytechnique</div>
+                <div class="school-item">ENS (Normales Sup.)</div>
+                <div class="school-item">Mines Paris - PSL</div>
+                <div class="school-item">Ponts ParisTech</div>
+                <div class="school-item">CentraleSupélec</div>
+                <div class="school-item">Télécom Paris</div>
+                <div class="school-item">ENSAE Paris</div>
+            </div>
+
+            <div class="good-luck">
+                💪 Courage à tous les préparationnaires ! Vous allez réussir ! 🚀
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const concours = [
+            {
+                name: "X-ENS-ESPCI (Polytechnique/ENS)",
+                type: "Épreuves écrites",
+                filieres: "MP, MPI, PC",
+                startDate: new Date('2026-04-13T08:00:00+02:00'),
+                endDate: new Date('2026-04-17T18:00:00+02:00'),
+                className: "card-xens",
+                description: "Banques d'épreuves communes X-ENS-ESPCI"
+            },
+            {
+                name: "Concours Mines-Ponts",
+                type: "Épreuves écrites",
+                filieres: "MP, MPI, PC, PSI",
+                startDate: new Date('2026-04-27T08:00:00+02:00'),
+                endDate: new Date('2026-04-30T18:00:00+02:00'),
+                className: "card-mines",
+                description: "Concours commun Mines-Ponts - 4 jours d'épreuves"
+            },
+            {
+                name: "Concours Centrale-Supélec",
+                type: "Épreuves écrites",
+                filieres: "MP, MPI, PC, PSI, TSI",
+                startDate: new Date('2026-05-04T08:00:00+02:00'),
+                endDate: new Date('2026-05-07T18:00:00+02:00'),
+                className: "card-centrale",
+                description: "Concours Centrale-Supélec - 15 grandes écoles"
+            },
+            {
+                name: "Oraux Mines-Ponts",
+                type: "Épreuves orales",
+                filieres: "MP, PC, PSI, MPI",
+                startDate: new Date('2026-06-22T08:00:00+02:00'),
+                endDate: new Date('2026-07-17T18:00:00+02:00'),
+                className: "card-oraux",
+                description: "Période des épreuves orales d'admission"
+            }
+        ];
+
+        function formatDate(date) {
+            return date.toLocaleDateString('fr-FR', { 
+                day: '2-digit', 
+                month: 'long', 
+                year: 'numeric' 
+            });
+        }
+
+        function calculateTimeRemaining(targetDate) {
+            const now = new Date();
+            const difference = targetDate - now;
+
+            if (difference <= 0) {
+                return null;
+            }
+
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            return { days, hours, minutes, seconds };
+        }
+
+        function getStatus(startDate, endDate) {
+            const now = new Date();
+            if (now < startDate) {
+                return 'upcoming';
+            } else if (now >= startDate && now <= endDate) {
+                return 'ongoing';
+            } else {
+                return 'finished';
+            }
+        }
+
+        function calculateProgress(startDate, endDate) {
+            const now = new Date();
+            const total = endDate - startDate;
+            const elapsed = now - startDate;
+            const progress = Math.min(100, Math.max(0, (elapsed / total) * 100));
+            return progress;
+        }
+
+        function createCountdownCard(concour, index) {
+            const card = document.createElement('div');
+            card.className = `countdown-card ${concour.className}`;
+            card.id = `concour-${index}`;
+
+            const status = getStatus(concour.startDate, concour.endDate);
+            
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="card-title">${concour.name}</div>
+                    <div class="card-type">${concour.type}</div>
+                    <div class="card-dates">
+                        ${formatDate(concour.startDate)} - ${formatDate(concour.endDate)}
+                    </div>
+                    <div class="card-filieres">${concour.filieres}</div>
+                </div>
+                <div class="countdown-display" id="countdown-${index}">
+                    <div class="time-unit">
+                        <span class="time-value" id="days-${index}">00</span>
+                        <span class="time-label">Jours</span>
+                    </div>
+                    <div class="time-unit">
+                        <span class="time-value" id="hours-${index}">00</span>
+                        <span class="time-label">Heures</span>
+                    </div>
+                    <div class="time-unit">
+                        <span class="time-value" id="minutes-${index}">00</span>
+                        <span class="time-label">Minutes</span>
+                    </div>
+                    <div class="time-unit">
+                        <span class="time-value" id="seconds-${index}">00</span>
+                        <span class="time-label">Secondes</span>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-${index}" style="width: 0%"></div>
+                </div>
+                <div class="status status-${status}" id="status-${index}"></div>
+            `;
+
+            return card;
+        }
+
+        function updateCountdown(concour, index) {
+            const status = getStatus(concour.startDate, concour.endDate);
+            const statusElement = document.getElementById(`status-${index}`);
+            const progressElement = document.getElementById(`progress-${index}`);
+
+            if (status === 'upcoming') {
+                const timeRemaining = calculateTimeRemaining(concour.startDate);
+                
+                if (timeRemaining) {
+                    document.getElementById(`days-${index}`).textContent = 
+                        String(timeRemaining.days).padStart(2, '0');
+                    document.getElementById(`hours-${index}`).textContent = 
+                        String(timeRemaining.hours).padStart(2, '0');
+                    document.getElementById(`minutes-${index}`).textContent = 
+                        String(timeRemaining.minutes).padStart(2, '0');
+                    document.getElementById(`seconds-${index}`).textContent = 
+                        String(timeRemaining.seconds).padStart(2, '0');
+                    
+                    statusElement.textContent = 'À venir';
+                    statusElement.className = 'status status-upcoming';
+                    
+                    // Calculate progress from now to start date
+                    const totalTime = concour.startDate - new Date('2025-11-02T17:00:00+01:00');
+                    const elapsed = new Date() - new Date('2025-11-02T17:00:00+01:00');
+                    const progress = Math.min(100, (elapsed / totalTime) * 100);
+                    progressElement.style.width = `${progress}%`;
+                }
+            } else if (status === 'ongoing') {
+                document.getElementById(`countdown-${index}`).innerHTML = `
+                    <div style="text-align: center; padding: 20px; font-size: 1.5rem; font-weight: 700; grid-column: 1 / -1;">
+                        ⏳ En cours !
+                    </div>
+                `;
+                statusElement.textContent = 'Épreuves en cours';
+                statusElement.className = 'status status-ongoing';
+                
+                const progress = calculateProgress(concour.startDate, concour.endDate);
+                progressElement.style.width = `${progress}%`;
+            } else {
+                document.getElementById(`countdown-${index}`).innerHTML = `
+                    <div style="text-align: center; padding: 20px; font-size: 1.5rem; font-weight: 700; grid-column: 1 / -1; color: #757575;">
+                        ✓ Terminé
+                    </div>
+                `;
+                statusElement.textContent = 'Épreuves terminées';
+                statusElement.className = 'status status-finished';
+                progressElement.style.width = '100%';
+            }
+        }
+
+        function initializeCountdowns() {
+            const container = document.getElementById('countdowns');
+            
+            concours.forEach((concour, index) => {
+                const card = createCountdownCard(concour, index);
+                container.appendChild(card);
+            });
+
+            // Update all countdowns immediately
+            updateAllCountdowns();
+
+            // Update every second
+            setInterval(updateAllCountdowns, 1000);
+        }
+
+        function updateAllCountdowns() {
+            concours.forEach((concour, index) => {
+                updateCountdown(concour, index);
+            });
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeCountdowns);
+    </script>
+</body>
+</html>
